@@ -27,7 +27,7 @@ function determineSubTotal() {
   var subTotal = 0;
 
   for (i = 0; i < iMax; i++)
-    subTotal += parseInt(rows[i].cells[4].innerHTML.substr(1).slice(0, -3));
+    subTotal += formatMoney(rows[i].cells[4].innerHTML);
   return subTotal;
 }
 
@@ -36,15 +36,24 @@ function updatePrices() {
   var rows = rowsWithImage().rows;
   var iMax = rows.length;
   var subTotal = determineSubTotal();
-  var tax = Math.floor(subTotal*0.10);
+  var tax = subTotal*0.10;
   var shipping = 40;
   if(subTotal>1000)
   shipping = 0;
   var total = subTotal+shipping+tax;
-  table.rows[iMax + 1].cells[1].innerHTML= "$" + subTotal + ".00";
-  table.rows[iMax + 2].cells[1].innerHTML= "$" + tax + ".00";
-  table.rows[iMax + 3].cells[1].innerHTML= "$" + shipping + ".00";
-  table.rows[iMax + 4].cells[1].innerHTML= "$" + total + ".00";
+  table.rows[iMax + 1].cells[1].innerHTML= formatMoney(subTotal);
+  table.rows[iMax + 2].cells[1].innerHTML= formatMoney(tax);
+  table.rows[iMax + 3].cells[1].innerHTML= formatMoney(shipping);
+  table.rows[iMax + 4].cells[1].innerHTML= formatMoney(total);
+}
+
+function formatMoney(input){
+  input = input.toString();
+  if(input.indexOf("$") > -1) {
+    return parseFloat(input.substr(1).slice(0, -3));
+  } else {
+    return "$"+parseFloat(input).toFixed(2);
+  }
 }
 
 function outputCartRow(file, title, quantity, price, total) {
@@ -61,9 +70,9 @@ function outputCartRow(file, title, quantity, price, total) {
   cell2.innerHTML = title;
   cell3.innerHTML = quantity;
   cell3.classList.add('center');
-  cell4.innerHTML = "$" + price + ".00";
+  cell4.innerHTML = formatMoney(price);
   cell4.classList.add('right');
-  cell5.innerHTML = "$" + total + ".00";
+  cell5.innerHTML = formatMoney(total);
   cell5.classList.add('right');
 
 }
